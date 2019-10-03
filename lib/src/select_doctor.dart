@@ -40,7 +40,6 @@ class _SelectDoctorState extends State<SelectDoctor> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                          // AppointmentForm()
                           SelectTime(selectedDoctor: doctor),
                       ),
                     );
