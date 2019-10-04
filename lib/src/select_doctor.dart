@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/doctor.dart';
-import './select_time.dart';
 import './appointment_form.dart';
 
 class SelectDoctor extends StatefulWidget {
@@ -18,8 +17,8 @@ class _SelectDoctorState extends State<SelectDoctor> {
     super.initState();
     // fetching doctors and setting state
     // TODO: Add a loader while loading data
-    Doctor.fetchAllDoctors().then((docs){
-      setState((){
+    Doctor.fetchAllDoctors().then((docs) {
+      setState(() {
         this.doctors = docs;
       });
     });
@@ -39,8 +38,7 @@ class _SelectDoctorState extends State<SelectDoctor> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                          SelectTime(selectedDoctor: doctor),
+                        builder: (context) => AppointmentForm(selectedDoctor: doctor,),
                       ),
                     );
                   },

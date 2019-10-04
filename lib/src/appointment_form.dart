@@ -1,31 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
+import '../models/doctor.dart';
+import './select_time.dart';
 
 class AppointmentForm extends StatefulWidget {
+  final Doctor selectedDoctor;
+
+  AppointmentForm({Key key, @required this.selectedDoctor}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
-    return new AppointmentFormState();
+    return new AppointmentFormState(selectedDoctor);
   }
 }
 
 class AppointmentFormState extends State<AppointmentForm> {
+  final Doctor selectedDoctor;
 
+  AppointmentFormState(this.selectedDoctor);
 
-  createPost(Map body) async {
-  var url = "https://dnepraa36k.execute-api.us-east-1.amazonaws.com/dev/book-appointment";
-
-  http.post(url, body: json.encode(body)).then((http.Response response) {
-    final int statusCode = response.statusCode;
- 
-    if (statusCode < 200 || statusCode > 400 || json == null) {
-      throw new Exception("Error while fetching data");
-    }
-    var data = json.decode(response.body);
-    print(data);
-  });
-}
   final _formKey = GlobalKey<FormState>();
 
   String _name = "";
@@ -95,12 +87,11 @@ class AppointmentFormState extends State<AppointmentForm> {
                     }
                     return null;
                   },
-                   onSaved: (value) {
+                  onSaved: (value) {
                     setState(() {
                       _reason = value;
                     });
                   },
-                  
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -112,16 +103,18 @@ class AppointmentFormState extends State<AppointmentForm> {
                         this._formKey.currentState.save();
                         // Process data.
                         print('$_name, $_phone, $_reason');
-                        // TODO: get doctor id and date from user selection
-                        var body = {
-                          "doctorWorksheetId":0,
-                          "startTime":"11:00:00",
-                          "patientName": _name,
-                          "phone": _phone,
-                          "reason": _reason,
-                          "date": "2019-10-4"
-                        };
-                        createPost(body);
+                        
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SelectTime(
+                              selectedDoctor: selectedDoctor,
+                              patientName: _name,
+                              phone: _phone,
+                              reason: _reason,
+                            ),
+                          ),
+                        );
                       }
                     },
                     child: Text('Continue'),
