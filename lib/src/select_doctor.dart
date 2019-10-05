@@ -1,49 +1,129 @@
 import 'package:flutter/material.dart';
 import '../models/doctor.dart';
-import './appointment_form.dart';
+import './select_time.dart';
 
-class SelectDoctor extends StatefulWidget {
+class AppointmentForm extends StatefulWidget {
+  final Doctor selectedDoctor;
+
+  AppointmentForm({Key key, @required this.selectedDoctor}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
-    return new _SelectDoctorState();
+    return new AppointmentFormState(selectedDoctor);
   }
 }
 
-// screen 1
-class _SelectDoctorState extends State<SelectDoctor> {
-  List<Doctor> doctors = [];
-  @override
-  initState() {
-    super.initState();
-    // fetching doctors and setting state
-    // TODO: Add a loader while loading data
-    Doctor.fetchAllDoctors().then((docs) {
-      setState(() {
-        this.doctors = docs;
-      });
-    });
-  }
+class AppointmentFormState extends State<AppointmentForm> {
+  final Doctor selectedDoctor;
+
+  AppointmentFormState(this.selectedDoctor);
+
+  final _formKey = GlobalKey<FormState>();
+
+  String _name = "";
+  String _phone = "";
+  String _reason = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pick your doctor'),
+        title: Text("양식을 작성해주세요"),
       ),
       body: Column(
-        children: doctors
-            .map((doctor) => RaisedButton(
-                  child: Text(doctor.name),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AppointmentForm(selectedDoctor: doctor,),
-                      ),
-                    );
+        children: <Widget>[
+          Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.person),
+                    hintText: '김모씨',
+                    labelText: '성함 *',
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return '성함을 입력해주세요';
+                    }
+                    return null;
                   },
-                ))
-            .toList(),
+                  onSaved: (value) {
+                    setState(() {
+                      _name = value;
+                    });
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.local_phone),
+                    hintText: '01012345678',
+                    labelText: '휴대폰번호 *',
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return '휴대폰 번호를 입력해주세요';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      _phone = value;
+                    });
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.insert_comment),
+                    hintText: '이유를 세문장 안으로 설명해주세요.',
+                    labelText: '방문 이유를 입력해주세요.',
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 3,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return '세 문장안으로 방문하시는 이유를 설명해주세요';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    setState(() {
+                      _reason = value;
+                    });
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: RaisedButton(
+                    onPressed: () {
+                      // Validate will return true if the form is valid, or false if
+                      // the form is invalid.
+                      if (_formKey.currentState.validate()) {
+                        this._formKey.currentState.save();
+                        // Process data.
+                        print('$_name, $_phone, $_reason');
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SelectTime(
+                              selectedDoctor: selectedDoctor,
+                              patientName: _name,
+                              phone: _phone,
+                              reason: _reason,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text('Continue'),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

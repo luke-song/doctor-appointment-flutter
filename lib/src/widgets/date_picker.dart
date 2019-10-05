@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class DatePicker extends StatefulWidget {
-
   Function onDateChange;
 
   DatePicker(this.onDateChange);
@@ -17,7 +16,7 @@ class DatePickerState extends State<DatePicker> {
 
   Function onDateChange;
 
-  DatePickerState(this.onDateChange); 
+  DatePickerState(this.onDateChange);
 
   String getFormatedDate(DateTime date) {
     final String year = date.year.toString();
@@ -36,8 +35,8 @@ class DatePickerState extends State<DatePicker> {
 
     if (picked != null && picked != _date) {
       print('Date selected: ${picked.toString()}');
-      
-      if(onDateChange != null){
+
+      if (onDateChange != null) {
         this.onDateChange(getFormatedDate(picked));
       }
       setState(() {
@@ -52,9 +51,9 @@ class DatePickerState extends State<DatePicker> {
     return Center(
       child: Column(
         children: <Widget>[
-          Text('Date selected: $formattedDate'),
+          Text('선택하신 날짜: $formattedDate'),
           RaisedButton(
-            child: new Text('Select Date'),
+            child: new Text('날짜를 선택해주세요'),
             onPressed: () {
               _selectedDate(context);
             },
@@ -64,3 +63,4 @@ class DatePickerState extends State<DatePicker> {
     );
   }
 }
+
