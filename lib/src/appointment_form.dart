@@ -28,7 +28,7 @@ class AppointmentFormState extends State<AppointmentForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fill out the form"),
+        title: Text("양식을 작성해주세요"),
       ),
       body: Column(
         children: <Widget>[
@@ -40,12 +40,12 @@ class AppointmentFormState extends State<AppointmentForm> {
                 TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(Icons.person),
-                    hintText: 'John Doe',
-                    labelText: 'Full Name *',
+                    hintText: '김모씨',
+                    labelText: '성함 *',
                   ),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please enter your name';
+                      return '성함을 입력해주세요';
                     }
                     return null;
                   },
@@ -58,12 +58,12 @@ class AppointmentFormState extends State<AppointmentForm> {
                 TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(Icons.local_phone),
-                    hintText: '1234567890',
-                    labelText: 'Phone Number *',
+                    hintText: '01012345678',
+                    labelText: '휴대폰번호 *',
                   ),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please enter your phone number';
+                      return '휴대폰 번호를 입력해주세요';
                     }
                     return null;
                   },
@@ -76,14 +76,14 @@ class AppointmentFormState extends State<AppointmentForm> {
                 TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(Icons.insert_comment),
-                    hintText: 'Reason...',
-                    labelText: 'Please enter the reason for visit',
+                    hintText: '이유를 세문장 안으로 설명해주세요.',
+                    labelText: '방문 이유를 입력해주세요.',
                   ),
                   keyboardType: TextInputType.multiline,
                   maxLines: 3,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please enter some text';
+                      return '세 문장안으로 방문하시는 이유를 설명해주세요';
                     }
                     return null;
                   },
@@ -103,7 +103,7 @@ class AppointmentFormState extends State<AppointmentForm> {
                         this._formKey.currentState.save();
                         // Process data.
                         print('$_name, $_phone, $_reason');
-                        
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -128,3 +128,4 @@ class AppointmentFormState extends State<AppointmentForm> {
     );
   }
 }
+

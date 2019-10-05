@@ -15,10 +15,10 @@ class SelectTime extends StatefulWidget {
   final String reason;
   SelectTime(
       {Key key,
-      @required this.selectedDoctor,
-      @required this.patientName,
-      @required this.reason,
-      @required this.phone})
+        @required this.selectedDoctor,
+        @required this.patientName,
+        @required this.reason,
+        @required this.phone})
       : super(key: key);
 
   @override
@@ -43,9 +43,9 @@ class SelectTimeState extends State<SelectTime> {
 
   SelectTimeState(
       {@required this.selectedDoctor,
-      @required this.patientName,
-      @required this.reason,
-      @required this.phone});
+        @required this.patientName,
+        @required this.reason,
+        @required this.phone});
 
 // TODO: Move this function elsewhere.
   void fetchData(String formattedDate) async {
@@ -70,7 +70,7 @@ class SelectTimeState extends State<SelectTime> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pick a date and time"),
+        title: Text("날짜와 시간을 선택해주세요"),
       ),
       body: Column(
         children: <Widget>[
@@ -84,28 +84,28 @@ class SelectTimeState extends State<SelectTime> {
           Column(
             children: availableTimes
                 .map((timeString) => RaisedButton(
-                      child: Text(timeString),
-                      onPressed: () {
-                        final Map<String, dynamic> body = {
-                          "doctorWorksheetId": selectedDoctor.doctorWorksheetId,
-                          "startTime": timeString,
-                          "patientName": patientName,
-                          "phone": phone,
-                          "reason": reason,
-                          "date": selectedDate
-                        };
-                        Doctor.createAppointment(body).then((success){
-                          print('Appointment created probably');
-                        });
-                        // TODO: Add the confirm appointment screen
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => ConfirmBook(),
-                        //   ),
-                        // );
-                      },
-                    ))
+              child: Text(timeString),
+              onPressed: () {
+                final Map<String, dynamic> body = {
+                  "doctorWorksheetId": selectedDoctor.doctorWorksheetId,
+                  "startTime": timeString,
+                  "patientName": patientName,
+                  "phone": phone,
+                  "reason": reason,
+                  "date": selectedDate
+                };
+                Doctor.createAppointment(body).then((success) {
+                  print('Appointment created');
+                });
+                // TODO: Add the confirm appointment screen
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => ConfirmBook(),
+                //   ),
+                // );
+              },
+            ))
                 .toList(),
           ),
         ],
