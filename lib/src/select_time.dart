@@ -4,6 +4,10 @@ import 'package:http/http.dart' as http;
 import '../models/doctor.dart';
 import './widgets/date_picker.dart';
 import './confirm_book.dart';
+import './dev.dart';
+
+final String appBarText =
+    isEnglish ? 'Select a date and time' : "날짜와 시간을 선택해주세요";
 
 const BASE_URL =
     "https://dnepraa36k.execute-api.us-east-1.amazonaws.com/dev/get-doctor-availability-for-day/";
@@ -15,10 +19,10 @@ class SelectTime extends StatefulWidget {
   final String reason;
   SelectTime(
       {Key key,
-        @required this.selectedDoctor,
-        @required this.patientName,
-        @required this.reason,
-        @required this.phone})
+      @required this.selectedDoctor,
+      @required this.patientName,
+      @required this.reason,
+      @required this.phone})
       : super(key: key);
 
   @override
@@ -39,17 +43,22 @@ class SelectTimeState extends State<SelectTime> {
   final String reason;
   String selectedDate;
 
+  bool _loading = false;
+
   List<String> availableTimes = [];
 
   SelectTimeState(
       {@required this.selectedDoctor,
-        @required this.patientName,
-        @required this.reason,
-        @required this.phone});
+      @required this.patientName,
+      @required this.reason,
+      @required this.phone});
 
 // TODO: Move this function elsewhere.
   void fetchData(String formattedDate) async {
     var url = "$BASE_URL${selectedDoctor.doctorWorksheetId}/$formattedDate";
+    setState(() {
+      _loading = true;
+    });
 
     // Await the http get response, then decode the json-formatted responce.
     var response = await http.get(url);
@@ -62,53 +71,182 @@ class SelectTimeState extends State<SelectTime> {
     } else {
       print("Request failed with status: ${response.statusCode}.");
     }
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  void _showDialog(String time) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Confirm Appoinment"),
+          content:
+              new Text("Do you want an appointmnet on $selectedDate at $time."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Confirm"),
+              onPressed: () {
+                // pop the current alert
+                Navigator.of(context).pop();
+                _showLoader(time);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLoader(String time) {
+    final Map<String, dynamic> body = {
+      "doctorWorksheetId": selectedDoctor.doctorWorksheetId,
+      "startTime": time,
+      "patientName": patientName,
+      "phone": phone,
+      "reason": reason,
+      "date": selectedDate
+    };
+    Doctor.createAppointment(body).then((success) {
+      // pop the loader
+      Navigator.of(context).pop();
+      _showSuccess();
+      print('Appointment created');
+    });
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Creating Appointment"),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                child: CircularProgressIndicator(),
+                height: 24.0,
+                width: 24.0,
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSuccess() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Success!"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Done"),
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     print('${selectedDoctor.name}, ${selectedDoctor.doctorWorksheetId}');
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("날짜와 시간을 선택해주세요"),
+        title: Text(appBarText),
       ),
-      body: Column(
-        children: <Widget>[
-          DatePicker((date) {
-            print(date.toString());
-            fetchData(date);
-            setState(() {
-              selectedDate = date;
-            });
-          }),
-          Column(
-            children: availableTimes
-                .map((timeString) => RaisedButton(
-              child: Text(timeString),
-              onPressed: () {
-                final Map<String, dynamic> body = {
-                  "doctorWorksheetId": selectedDoctor.doctorWorksheetId,
-                  "startTime": timeString,
-                  "patientName": patientName,
-                  "phone": phone,
-                  "reason": reason,
-                  "date": selectedDate
-                };
-                Doctor.createAppointment(body).then((success) {
-                  print('Appointment created');
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text(
+                  'Select Appointment Date : ',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+            DatePicker((formattedDate, DateTime date) {
+              print(formattedDate.toString());
+              // if it's sunday
+              if (date.weekday == 7) {
+                setState(() {
+                  availableTimes = [];
+                  selectedDate = formattedDate;
                 });
-                // TODO: Add the confirm appointment screen
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => ConfirmBook(),
-                //   ),
-                // );
-              },
-            ))
-                .toList(),
-          ),
-        ],
+              } else {
+                setState(() {
+                  selectedDate = formattedDate;
+                });
+                // for every other day, lets fetch available times
+                fetchData(formattedDate);
+              }
+            }, _loading),
+            SizedBox(
+              width: 16.0,
+              height: 16.0,
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  'Select Appointment Time : ',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+            Wrap(
+              spacing: 8.0, // gap between adjacent chips
+              runSpacing: 4.0, // gap between lines
+              children: this._loading
+                  ? [
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Center(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(),
+                          height: 24.0,
+                          width: 24.0,
+                        ),
+                      )
+                    ]
+                  : availableTimes
+                      .map((timeString) => RaisedButton(
+                            child: Text(timeString),
+                            onPressed: () {
+                              _showDialog(timeString);
+                            },
+                          ))
+                      .toList(),
+            ),
+            Text(!_loading && availableTimes.length == 0
+                ? 'Sorry no available times.'
+                : ''),
+          ],
+        ),
       ),
     );
   }
