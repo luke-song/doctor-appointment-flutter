@@ -4,7 +4,7 @@ import './select_time.dart';
 import './dev.dart';
 
 final String appBarText = isEnglish ? 'Fill out the form' : "양식을 작성해주세요";
-final String continueText = isEnglish ? 'Pick Date and Time' : '';
+final String continueText = isEnglish ? 'Pick Date and Time' : '날짜와 시간 정하기';
 
 class AppointmentForm extends StatefulWidget {
   final Doctor selectedDoctor;
@@ -47,7 +47,7 @@ class AppointmentFormState extends State<AppointmentForm> {
                   TextFormField(
                     decoration: const InputDecoration(
                       icon: Icon(Icons.person),
-                      hintText: '김모씨',
+                      hintText: '홍길동',
                       labelText: '성함 *',
                     ),
                     validator: (value) {
