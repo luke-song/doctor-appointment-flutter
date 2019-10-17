@@ -3,7 +3,7 @@ import '../models/doctor.dart';
 import './appointment_form.dart';
 import './dev.dart';
 
-final String appBarText = isEnglish ? 'Select a doctor' : '송현민';
+final String appBarText = isEnglish ? 'Select a doctor' : '예약하실 의사를 선택해주세요.';
 
 class SelectDoctor extends StatefulWidget {
   @override

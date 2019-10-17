@@ -84,19 +84,19 @@ class SelectTimeState extends State<SelectTime> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Confirm Appoinment"),
-          content:
-              new Text("Do you want an appointmnet on $selectedDate at $time."),
+          title: new Text("예약을 확인해주세요"),
+          content: new Text(
+              "예약을 이 날짜와 시간에 원하시는게 맞습니까? 날짜 : $selectedDate 시간 : $time."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Cancel"),
+              child: new Text("취소"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             new FlatButton(
-              child: new Text("Confirm"),
+              child: new Text("확인"),
               onPressed: () {
                 // pop the current alert
                 Navigator.of(context).pop();
@@ -122,7 +122,7 @@ class SelectTimeState extends State<SelectTime> {
       // pop the loader
       Navigator.of(context).pop();
       _showSuccess();
-      print('Appointment created');
+      print('예약이 완료되었습니다');
     });
     showDialog(
       context: context,
@@ -130,7 +130,7 @@ class SelectTimeState extends State<SelectTime> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Creating Appointment"),
+          title: new Text("예약을 신청하는중입니다"),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -153,11 +153,11 @@ class SelectTimeState extends State<SelectTime> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Success!"),
+          title: new Text("예약이 완료되었습니다!"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Done"),
+              child: new Text("확인"),
               onPressed: () {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
               },
@@ -182,7 +182,7 @@ class SelectTimeState extends State<SelectTime> {
             Row(
               children: <Widget>[
                 Text(
-                  'Select Appointment Date : ',
+                  '예약 날짜 선택하기 : ',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                   textAlign: TextAlign.left,
                 ),
@@ -211,7 +211,7 @@ class SelectTimeState extends State<SelectTime> {
             Row(
               children: <Widget>[
                 Text(
-                  'Select Appointment Time : ',
+                  '예약 시간 선택하기 : ',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                   textAlign: TextAlign.left,
                 ),
@@ -243,7 +243,7 @@ class SelectTimeState extends State<SelectTime> {
                       .toList(),
             ),
             Text(!_loading && availableTimes.length == 0
-                ? 'Sorry no available times.'
+                ? '병원이 쉬는날이라 예약이 불가능합니다.'
                 : ''),
           ],
         ),
